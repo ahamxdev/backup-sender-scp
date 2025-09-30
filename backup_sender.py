@@ -3,7 +3,7 @@
 
 import os
 import time
-from paramiko import SSHClient, AutoAddPolicy
+from paramiko import SSHClient, AutoAddPolicy, SSHException
 from scp import SCPClient
 from dotenv import load_dotenv
 
@@ -44,19 +44,26 @@ def main():
         # Filter unsent files
         new_files = [f for f in all_files if f not in sent_files]
 
-        for f in new_files:
-            local_path = os.path.join(LOCAL_DIR, f)
-            remote_path = os.path.join(REMOTE_DIR, f)
-            send_file(local_path, remote_path)
+        if new_files:
+            try:
+                for f in new_files:
+                    local_path = os.path.join(LOCAL_DIR, f)
+                    remote_path = os.path.join(REMOTE_DIR, f)
+                    send_file(local_path, remote_path)
 
-            # Send logs with new backup
-            for log_file in LOG_FILES:
-                log_local_path = os.path.join(LOCAL_DIR, log_file)
-                if os.path.exists(log_local_path):
-                    send_file(log_local_path, os.path.join(REMOTE_DIR, log_file))
+                    # Send logs with new backup
+                    for log_file in LOG_FILES:
+                        log_local_path = os.path.join(LOCAL_DIR, log_file)
+                        if os.path.exists(log_local_path):
+                            send_file(log_local_path, os.path.join(REMOTE_DIR, log_file))
 
-            # Mark backup as sent
-            sent_files.add(f)
+                    # Mark backup as sent
+                    sent_files.add(f)
+
+            except SSHException as e:
+                print(f"SSH connection failed: {e}. Retrying in 1 minute.")
+        else:
+            print("No new backups found.")
 
         time.sleep(60)
 
