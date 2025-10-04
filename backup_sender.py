@@ -79,7 +79,13 @@ def process_backups():
         print(f"❌ SSH connection failed: {e}")
 
 def main():
-    """Run once every minute, but only act at specified UTC time."""
+    """Send all existing backups first, then check daily at scheduled time."""
+    # --- Step 1: Send all existing backups immediately ---
+    print("🚀 Initial run: sending all existing backups...")
+    process_backups()
+
+    # --- Step 2: Check daily at the specified UTC time ---
+    print(f"⏰ Waiting for daily check at {CHECK_HOUR_UTC:02d}:{CHECK_MINUTE_UTC:02d} UTC...")
     while True:
         now_utc = datetime.now(timezone.utc)
         if now_utc.hour == CHECK_HOUR_UTC and now_utc.minute == CHECK_MINUTE_UTC:
