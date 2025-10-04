@@ -86,6 +86,21 @@ MIT License
 
 ---
 
-## Contributing
+## 🧑‍💻 Contribution
 
-Feel free to open issues or submit pull requests for improvements!
+If you have suggestions or encounter an issue, please open a new Issue or submit a Pull Request.
+
+---
+
+## 📞 Contact
+
+For questions or support, you can reach out via [GitHub Issues](https://github.com/ahamxdev/backup-telebot/issues) or directly contact the maintainer.
+
+---
+
+## 👤 Author
+
+**Name:** AmirHossein AliMohammadi
+**GitHub:** [github.com/ahamxdev](https://github.com/ahamxdev)
+
+Good luck! 🚀
