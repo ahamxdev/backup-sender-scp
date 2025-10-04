@@ -22,7 +22,8 @@ REMOTE_DIR = os.getenv("REMOTE_DIR")
 LOG_FILES = ["backup_fartak.log", "backup.log"]
 
 # ---- Schedule settings ----
-CHECK_MINUTE_UTC = 10   # Run every hour at minute 10 (e.g., 00:10, 01:10, 02:10)
+CHECK_HOUR_UTC = 0      # 00:00 UTC
+CHECK_MINUTE_UTC = 30   # 00:30 UTC
 FILE_STABLE_MINUTES = 5 # File must be unchanged for at least 5 minutes
 
 sent_files = set()
@@ -78,19 +79,19 @@ def process_backups():
         print(f"❌ SSH connection failed: {e}")
 
 def main():
-    """Send all existing backups once, then check hourly at minute X."""
+    """Send all existing backups once, then check daily at 00:30 UTC."""
     # Step 1: Send all existing backups immediately
     print("🚀 Initial run: sending all existing backups...")
     process_backups()
 
-    # Step 2: Then check every hour at CHECK_MINUTE_UTC
-    print(f"⏰ Scheduled to run at minute {CHECK_MINUTE_UTC:02d} of every UTC hour...")
+    # Step 2: Then check daily at 00:30 UTC
+    print(f"⏰ Scheduled to run daily at {CHECK_HOUR_UTC:02d}:{CHECK_MINUTE_UTC:02d} UTC...")
     while True:
         now_utc = datetime.now(timezone.utc)
-        if now_utc.minute == CHECK_MINUTE_UTC:
+        if now_utc.hour == CHECK_HOUR_UTC and now_utc.minute == CHECK_MINUTE_UTC:
             process_backups()
-            print("⏳ Waiting until next hour...")
-            time.sleep(3000)  # Wait ~50 minutes to avoid multiple runs in the same hour
+            print("⏳ Waiting until next day...")
+            time.sleep(3600 * 23.5)  # Sleep ~23.5 hours to avoid re-triggering within same day
         else:
             time.sleep(60)
 
